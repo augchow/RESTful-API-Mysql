@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
 
 
@@ -98,9 +99,37 @@ function deleteArticle(userId) {
   });
 }
 
+function selectPersonalArticle(token) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, 'my_secret_key', (err, decoded) => {
+      if (err) {
+        reject(err);
+      } else {
+        const userId = decoded.payload.user_id;
+
+        connectionPool.getConnection((connectionError, connection) => {
+          if (connectionError) {
+            reject(connectionError);
+          } else {
+            connection.query('SELECT * FROM article WHERE user_id = ?', [userId], (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
+              connection.release();
+            });
+          }
+        });
+      }
+    });
+  });
+}
+
 module.exports = {
   createArticle,
   getArticle,
   modifyArticle,
-  deleteArticle
+  deleteArticle,
+  selectPersonalArticle
 };

@@ -13,4 +13,7 @@ router.route('/:user_id')
   .put(userCtrl.userPut)
   .delete(userCtrl.userDelete);
 
+router.route('/login')
+  .post(userCtrl.userLogin);
+
 module.exports = router;

@@ -1,5 +1,8 @@
 const mysql = require('mysql');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const config = require('../../config/config');
+const APPError = require('../helper/AppError');
 
 const connectionPool = mysql.createPool({
   connectionLimit: 10,
@@ -9,7 +12,7 @@ const connectionPool = mysql.createPool({
   database: config.mysqlDatabase
 });
 
-// User POST
+// Create User POST
 function createUser(insertValues) {
   return new Promise((resolve, reject) => {
     connectionPool.getConnection((connectionError, connection) => {
@@ -30,7 +33,7 @@ function createUser(insertValues) {
   });
 }
 
-// Select statement
+// Get All User GET
 function getUser() {
   return new Promise((resolve, reject) => {
     connectionPool.getConnection((connectionError, connection) => {
@@ -51,7 +54,7 @@ function getUser() {
   });
 }
 
-// Update
+// Update an User UPDATE/PUT
 function modifyUser(insertValues, userId) {
   return new Promise((resolve, reject) => {
     connectionPool.getConnection((connectionError, connection) => {
@@ -74,6 +77,7 @@ function modifyUser(insertValues, userId) {
   });
 }
 
+// Delete an User DELETE
 function deleteUser(userId) {
   return new Promise((resolve, reject) => {
     connectionPool.getConnection((connectionError, connection) => {
@@ -96,9 +100,49 @@ function deleteUser(userId) {
   });
 }
 
+function selectUserLogin(insertValues) {
+  return new Promise((resolve, reject) => {
+    connectionPool.getConnection((connectionError, connection) => {
+      if (connectionError) {
+        reject(connectionError);
+      } else {
+        console.log(insertValues);
+        connection.query('SELECT * FROM user WHERE user_mail = ?', [insertValues.user_mail], (error, result) => {
+          if (error) {
+            console.error('SQL error: ', error);
+            reject(error);
+          } else if (Object.keys(result).length === 0) {
+            reject(new APPError.LoginError1());
+          } else {
+            const dbHashPassword = result[0].user_password;
+            const userPassword = insertValues.user_password;
+
+            bcrypt.compare(userPassword, dbHashPassword).then((res) => {
+              if (res) {
+                const payload = {
+                  user_id: result[0].user_id,
+                  user_name: result[0].user_name,
+                  user_mail: result[0].user_mail
+                };
+
+                const token = jwt.sign({ payload, exp: Math.floor(Date.now() / 1000) + (60 * 15) }, 'my_secret_key');
+                resolve(Object.assign({ code: 200 }, { message: 'login successful', token }));
+              } else {
+                reject(new APPError.LoginError2());
+              }
+            });
+          }
+          connection.release();
+        });
+      }
+    });
+  });
+}
+
 module.exports = {
   createUser,
   getUser,
   modifyUser,
-  deleteUser
+  deleteUser,
+  selectUserLogin
 };

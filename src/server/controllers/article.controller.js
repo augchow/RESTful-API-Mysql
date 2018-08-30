@@ -28,9 +28,16 @@ const articleDelete = (req, res) => {
   }).catch((err) => { return res.send(err); });
 };
 
+const articlePersonalGet = (req, res) => {
+  articleModule.selectPersonalArticle(req.token).then((result) => {
+    res.send(result);
+  }).catch((err) => { return res.status(401).send(err); });
+};
+
 module.exports = {
   articlePost,
   articleGet,
   articlePut,
-  articleDelete
+  articleDelete,
+  articlePersonalGet
 };
