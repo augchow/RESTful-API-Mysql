@@ -16,13 +16,27 @@ const userPost = (req, res) => {
 
 const userGet = (req, res) => {
   userModule.getUser().then((result) => {
+    console.log(result);
     res.send(result);
+    // res.send(data);
   }).catch((err) => { return res.send(err); });
+};
+
+const GetById = (req, res, next) => {
+  const userId = req.params.user_id;
+  userModule.getUserById(userId).then((result) => {
+    res.send(result);
+  }).catch((err) => { next(err); });
 };
 
 const userPut = (req, res) => {
   const userId = req.params.user_id;
-  const insertValues = req.body;
+  // const insertValues = req.body;
+  const insertValues = {
+    user_name: req.body.user_name,
+    user_mail: req.body.user_mail,
+    user_password: bcrypt.hashSync(req.body.user_password, 10)
+  };
   userModule.modifyUser(insertValues, userId).then((result) => {
     res.send(result);
   }).catch((err) => { return res.send(err); });
@@ -46,6 +60,7 @@ const userLogin = (req, res, next) => {
 module.exports = {
   userPost,
   userGet,
+  GetById,
   userPut,
   userDelete,
   userLogin

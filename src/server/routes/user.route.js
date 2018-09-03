@@ -11,6 +11,7 @@ router.route('/')
 
 router.route('/:user_id')
   .put(userCtrl.userPut)
+  .get(userCtrl.GetById)
   .delete(userCtrl.userDelete);
 
 router.route('/login')

@@ -54,6 +54,26 @@ function getUser() {
   });
 }
 
+function getUserById(userId) {
+  return new Promise((resolve, reject) => {
+    connectionPool.getConnection((connectionError, connection) => {
+      if (connectionError) {
+        reject(connectionError);
+      } else {
+        connection.query('SELECT * FROM `user` WHERE user_id = ?', [userId], (error, result) => {
+          if (error) {
+            console.error('SQL error: ', error);
+            reject(error);
+          } else {
+            resolve(result);
+          }
+          connection.release();
+        });
+      }
+    });
+  });
+}
+
 // Update an User UPDATE/PUT
 function modifyUser(insertValues, userId) {
   return new Promise((resolve, reject) => {
@@ -142,6 +162,7 @@ function selectUserLogin(insertValues) {
 module.exports = {
   createUser,
   getUser,
+  getUserById,
   modifyUser,
   deleteUser,
   selectUserLogin
