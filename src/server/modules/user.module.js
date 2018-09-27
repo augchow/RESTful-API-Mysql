@@ -19,7 +19,7 @@ function createUser(insertValues) {
       if (connectionError) {
         reject(connectionError);
       } else {
-        connection.query('INSERT INTO `user` SET ?', insertValues, (error, result) => {
+        connection.query('INSERT INTO `users` SET ?', insertValues, (error, result) => {
           if (error) {
             console.error('SQL error: ', error);
             reject(error);
@@ -40,7 +40,7 @@ function getUser() {
       if (connectionError) {
         reject(connectionError);
       } else {
-        connection.query('SELECT * FROM `user`', (error, result) => {
+        connection.query('SELECT * FROM `users`', (error, result) => {
           if (error) {
             console.error('SQL error: ', error);
             reject(error);
@@ -60,7 +60,7 @@ function getUserById(userId) {
       if (connectionError) {
         reject(connectionError);
       } else {
-        connection.query('SELECT * FROM `user` WHERE user_id = ?', [userId], (error, result) => {
+        connection.query('SELECT * FROM `users` WHERE user_id = ?', [userId], (error, result) => {
           if (error) {
             console.error('SQL error: ', error);
             reject(error);
@@ -81,7 +81,7 @@ function modifyUser(insertValues, userId) {
       if (connectionError) {
         reject(connectionError);
       } else {
-        connection.query('UPDATE `user` SET ? WHERE user_id = ?', [insertValues, userId], (error, result) => {
+        connection.query('UPDATE `users` SET ? WHERE user_id = ?', [insertValues, userId], (error, result) => {
           if (error) {
             console.error('SQL error: ', error);
             reject(error);
@@ -104,7 +104,7 @@ function deleteUser(userId) {
       if (connectionError) {
         reject(connectionError);
       } else {
-        connection.query('DELETE FROM `user` WHERE user_id = ?', userId, (error, result) => {
+        connection.query('DELETE FROM `users` WHERE user_id = ?', userId, (error, result) => {
           if (error) {
             console.error('SQL error: ', error);
             reject(error);
@@ -127,7 +127,7 @@ function selectUserLogin(insertValues) {
         reject(connectionError);
       } else {
         console.log(insertValues);
-        connection.query('SELECT * FROM user WHERE user_mail = ?', [insertValues.user_mail], (error, result) => {
+        connection.query('SELECT * FROM users WHERE user_mail = ?', [insertValues.user_mail], (error, result) => {
           if (error) {
             console.error('SQL error: ', error);
             reject(error);

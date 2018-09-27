@@ -4,13 +4,12 @@ const userModule = require('../modules/user.module');
 const userPost = (req, res) => {
 //   const insertValues = req.body;
   const insertValues = {
-    user_id: req.body.user_id,
     user_name: req.body.user_name,
     user_mail: req.body.user_mail,
     user_password: bcrypt.hashSync(req.body.user_password, 10)
   };
   userModule.createUser(insertValues).then((result) => {
-    res.send(result);
+    res.send(JSON.stringify(result, null, 3));
   }).catch((err) => { return res.send(err); });
 };
 
@@ -18,7 +17,6 @@ const userGet = (req, res) => {
   userModule.getUser().then((result) => {
     console.log(result);
     res.send(result);
-    // res.send(data);
   }).catch((err) => { return res.send(err); });
 };
 
@@ -31,7 +29,6 @@ const GetById = (req, res, next) => {
 
 const userPut = (req, res) => {
   const userId = req.params.user_id;
-  // const insertValues = req.body;
   const insertValues = {
     user_name: req.body.user_name,
     user_mail: req.body.user_mail,
